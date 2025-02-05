@@ -1,0 +1,61 @@
+/* Reset CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 20px;
+}
+
+/* App Container */
+.app {
+  max-width: 1200px;
+  margin: auto;
+  display: flex; /* Chia layout thành 2 cột */
+  gap: 20px;
+}
+
+/* Layout Wrapper */
+.main-content {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+}
+
+/* News Section */
+.news-section {
+  flex: 2; /* Chiếm 2 phần */
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Favorite Section */
+.favorite-section {
+  flex: 1; /* Chiếm 1 phần */
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Headings */
+h1 {
+  font-size: 28px;
+  color: #222;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
