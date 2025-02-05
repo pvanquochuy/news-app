@@ -20,12 +20,12 @@ describe("NewsList component", () => {
     expect(screen.getByText(/Đang tải dữ liệu/i)).toBeInTheDocument();
   });
 
-  //   test("adds article to favorites on button click", async () => {
-  //     renderNewsList();
+  test("adds article to favorites on button click", async () => {
+    renderNewsList();
 
-  //     const addToFavoritesButton = await screen.findByText(/❤️ Yêu thích/i);
-  //     userEvent.click(addToFavoritesButton);
+    const addToFavoritesButton = await screen.findByText(/❤️ Yêu thích/i);
+    userEvent.click(addToFavoritesButton);
 
-  //     expect(screen.getByText(/💖 Mục yêu thích/i)).toBeInTheDocument();
-  //   });
+    expect(screen.getByText(/💖 Mục yêu thích/i)).toBeInTheDocument();
+  });
 });

@@ -3,6 +3,7 @@ import newsReducer, {
   addToFavorites,
   fetchNews,
   removeFromFavorites,
+  setSearchQuery,
 } from "../../features/newsSlice";
 
 export interface Article {
@@ -17,12 +18,14 @@ export interface Article {
 interface NewsState {
   articles: Article[];
   favorites: Article[];
+  searchQuery: string;
   status: "idle" | "loading" | "failed";
 }
 
 const intialState: NewsState = {
   articles: [],
   favorites: [],
+  searchQuery: "",
   status: "idle",
 };
 
@@ -72,5 +75,31 @@ describe("newsSclce", () => {
     );
     const state = store.getState().news;
     expect(state.articles).toHaveLength(1);
+  });
+
+  test("should update search query", () => {
+    const nextState = newsReducer(intialState, setSearchQuery("tech"));
+    expect(nextState.searchQuery).toBe("tech");
+  });
+
+  test("should filter articles based on search query", async () => {
+    const store = configureStore({
+      reducer: { news: newsReducer },
+      middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+    });
+
+    await store.dispatch(
+      fetchNews() as unknown as ReturnType<typeof fetchNews>
+    );
+
+    store.dispatch(setSearchQuery("Breaking"));
+
+    const state = store.getState().news;
+    const filtersArticles = state.articles.filter((article) =>
+      article.title.toLowerCase().includes(state.searchQuery.toLowerCase())
+    );
+
+    expect(filtersArticles).toHaveLength(1);
+    expect(filtersArticles[0].title).toBe("Breaking News");
   });
 });

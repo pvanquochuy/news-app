@@ -15,12 +15,14 @@ export interface Article {
 interface NewsState {
   articles: Article[];
   favorites: Article[];
+  searchQuery: string;
   status: "idle" | "loading" | "failed";
 }
 
 const initialState: NewsState = {
   articles: [],
   favorites: [],
+  searchQuery: "",
   status: "idle",
 };
 
@@ -41,7 +43,9 @@ const newsSlice = createSlice({
       state.favorites = state.favorites.filter(
         (article) => article.title !== action.payload
       );
-      console.log("action:", action);
+    },
+    setSearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -59,5 +63,6 @@ const newsSlice = createSlice({
   },
 });
 
-export const { addToFavorites, removeFromFavorites } = newsSlice.actions;
+export const { addToFavorites, removeFromFavorites, setSearchQuery } =
+  newsSlice.actions;
 export default newsSlice.reducer;
