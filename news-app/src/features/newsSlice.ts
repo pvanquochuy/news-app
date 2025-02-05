@@ -37,7 +37,12 @@ const newsSlice = createSlice({
   initialState,
   reducers: {
     addToFavorites: (state, action: PayloadAction<Article>) => {
-      state.favorites.push(action.payload);
+      const isExist = state.favorites.some(
+        (article) => article.title === action.payload.title
+      );
+      if (!isExist) {
+        state.favorites.push(action.payload);
+      }
     },
     removeFromFavorites: (state, action: PayloadAction<string>) => {
       state.favorites = state.favorites.filter(
