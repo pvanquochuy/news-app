@@ -1,15 +1,23 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { Provider } from "react-redux";
+import "./styles/global.css";
+import { store } from "./store/store";
+import NewsList from "./components/NewsList";
+import FavoriteList from "./components/FavoriteList";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div>news app</div>
-    </>
+    <Provider store={store}>
+      <div className="main-content">
+        <div className="news-section">
+          <h1>📰 Tin Tức Mới</h1>
+          <NewsList />
+        </div>
+        <div className="favorite-section">
+          <h2>💖 Mục yêu thích</h2>
+          <FavoriteList />
+        </div>
+      </div>
+    </Provider>
   );
 }
 
