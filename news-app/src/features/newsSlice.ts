@@ -1,3 +1,4 @@
+import { store } from "./../store/store";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const API_KEY = "c55e643f7ab247b4a774755e7cc1c2fe";
@@ -20,9 +21,14 @@ interface NewsState {
   status: "idle" | "loading" | "failed";
 }
 
+const loadFavoritesFromLocalStorage = (): Article[] => {
+  const storedFavorites = localStorage.getItem("favorites");
+  return storedFavorites ? JSON.parse(storedFavorites) : [];
+};
+
 const initialState: NewsState = {
   articles: [],
-  favorites: [],
+  favorites: loadFavoritesFromLocalStorage(),
   searchQuery: "",
   category: "general",
   status: "idle",
@@ -49,12 +55,14 @@ const newsSlice = createSlice({
       );
       if (!isExist) {
         state.favorites.push(action.payload);
+        localStorage.setItem("favorites", JSON.stringify(state.favorites));
       }
     },
     removeFromFavorites: (state, action: PayloadAction<string>) => {
       state.favorites = state.favorites.filter(
         (article) => article.title !== action.payload
       );
+      localStorage.setItem("favorites", JSON.stringify(state.favorites));
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
