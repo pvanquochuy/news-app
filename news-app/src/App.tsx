@@ -4,6 +4,7 @@ import { store } from "./store/store";
 import NewsList from "./components/NewsList";
 import FavoriteList from "./components/FavoriteList";
 import SearchBar from "./components/SearchBar";
+import CategorySelector from "./components/CategorySelector";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <div className="main-content">
         <div className="news-section">
           <h1>📰 Tin Tức Mới</h1>
+          <CategorySelector />
           <SearchBar />
           <NewsList />
         </div>

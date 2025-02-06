@@ -3,6 +3,7 @@ import newsReducer, {
   addToFavorites,
   fetchNews,
   removeFromFavorites,
+  setCategory,
   setSearchQuery,
 } from "../../features/newsSlice";
 
@@ -19,6 +20,7 @@ interface NewsState {
   articles: Article[];
   favorites: Article[];
   searchQuery: string;
+  category: string;
   status: "idle" | "loading" | "failed";
 }
 
@@ -26,6 +28,7 @@ const intialState: NewsState = {
   articles: [],
   favorites: [],
   searchQuery: "",
+  category: "general",
   status: "idle",
 };
 
@@ -71,7 +74,7 @@ describe("newsSclce", () => {
     });
 
     await store.dispatch(
-      fetchNews() as unknown as ReturnType<typeof fetchNews>
+      fetchNews("general") as unknown as ReturnType<typeof fetchNews>
     );
     const state = store.getState().news;
     expect(state.articles).toHaveLength(1);
@@ -89,7 +92,7 @@ describe("newsSclce", () => {
     });
 
     await store.dispatch(
-      fetchNews() as unknown as ReturnType<typeof fetchNews>
+      fetchNews("general") as unknown as ReturnType<typeof fetchNews>
     );
 
     store.dispatch(setSearchQuery("Breaking"));
@@ -101,5 +104,27 @@ describe("newsSclce", () => {
 
     expect(filtersArticles).toHaveLength(1);
     expect(filtersArticles[0].title).toBe("Breaking News");
+  });
+
+  test("should update category when setCategory is dispatched", () => {
+    const nextState = newsReducer(intialState, setCategory("technology"));
+    expect(nextState.category).toBe("technology");
+  });
+
+  test("should handle fetchNews pending state", () => {
+    const action = { type: fetchNews.pending.type };
+    const nextState = newsReducer(intialState, action);
+    expect(nextState.status).toBe("loading");
+  });
+  test("should handle fetchNews fulfilled state", () => {
+    const action = { type: fetchNews.fulfilled.type, payload: [mockArticle] };
+    const nextState = newsReducer(intialState, action);
+    expect(nextState.status).toBe("idle");
+    expect(nextState.articles).toHaveLength(1);
+  });
+  test("should handle fetchNews rejected state", () => {
+    const action = { type: fetchNews.rejected.type };
+    const nextState = newsReducer(intialState, action);
+    expect(nextState.status).toBe("failed");
   });
 });
