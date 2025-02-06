@@ -1,0 +1,31 @@
+.category-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.category-selector h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.category-selector select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.category-selector select:hover {
+  background-color: #e9ecef;
+}
+
+.category-selector select:focus {
+  outline: none;
+  border-color: #0056b3;
+}

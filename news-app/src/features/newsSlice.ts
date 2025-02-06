@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const API_KEY = "c55e643f7ab247b4a774755e7cc1c2fe";
-const API_URL = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`;
+// const API_URL = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`;
 
 export interface Article {
   source: { name: string };
@@ -16,6 +16,7 @@ interface NewsState {
   articles: Article[];
   favorites: Article[];
   searchQuery: string;
+  category: string;
   status: "idle" | "loading" | "failed";
 }
 
@@ -23,14 +24,20 @@ const initialState: NewsState = {
   articles: [],
   favorites: [],
   searchQuery: "",
+  category: "general",
   status: "idle",
 };
 
-export const fetchNews = createAsyncThunk("news/fetchNews", async () => {
-  const response = await fetch(API_URL);
-  const data = await response.json();
-  return data.articles;
-});
+export const fetchNews = createAsyncThunk(
+  "news/fetchNews",
+  async (category: string = "general") => {
+    const response = await fetch(
+      `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`
+    );
+    const data = await response.json();
+    return data.articles;
+  }
+);
 
 const newsSlice = createSlice({
   name: "news",
@@ -46,6 +53,9 @@ const newsSlice = createSlice({
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
+    },
+    setCategory: (state, action: PayloadAction<string>) => {
+      state.category = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -63,6 +73,10 @@ const newsSlice = createSlice({
   },
 });
 
-export const { addToFavorites, removeFromFavorites, setSearchQuery } =
-  newsSlice.actions;
+export const {
+  addToFavorites,
+  removeFromFavorites,
+  setSearchQuery,
+  setCategory,
+} = newsSlice.actions;
 export default newsSlice.reducer;

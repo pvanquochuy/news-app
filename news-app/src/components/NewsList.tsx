@@ -6,12 +6,12 @@ import "../styles/newsList.css";
 
 const NewsList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { articles, status, searchQuery } = useSelector(
+  const { articles, status, searchQuery, category } = useSelector(
     (state: RootState) => state.news
   );
 
   useEffect(() => {
-    dispatch(fetchNews());
+    dispatch(fetchNews(category));
   }, [dispatch]);
 
   if (status === "loading") return <div>Đang tải dữ liệu...</div>;
