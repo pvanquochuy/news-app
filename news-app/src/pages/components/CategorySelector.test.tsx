@@ -56,7 +56,7 @@ describe("CategorySelector", () => {
     const select = screen.getByRole("combobox");
     fireEvent.change(select, { target: { value: "sports" } });
 
-    // expect(mockDispatch).toHaveBeenCalledWith(setCategory("sports"));
+    expect(mockDispatch).toHaveBeenCalledWith(setCategory("sports"));
     expect(mockDispatch).toHaveBeenCalledWith(fetchNews("sports"));
   });
 });

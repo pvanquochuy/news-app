@@ -1,4 +1,3 @@
-import { store } from "./../store/store";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const API_KEY = "c55e643f7ab247b4a774755e7cc1c2fe";
