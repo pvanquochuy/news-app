@@ -24,6 +24,8 @@ interface NewsState {
   status: "idle" | "loading" | "failed";
 }
 
+console.log("fix bug");
+
 const intialState: NewsState = {
   articles: [],
   favorites: [],
