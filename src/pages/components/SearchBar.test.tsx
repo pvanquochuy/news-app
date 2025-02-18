@@ -1,9 +1,28 @@
 import { Provider } from "react-redux";
-import { store } from "../../store/store";
 import SearchBar from "../../components/SearchBar";
 import { fireEvent, render, screen } from "@testing-library/react";
+import configureStore from "redux-mock-store";
+import { Store } from "redux";
+import { setSearchQuery } from "../../features/newsSlice";
+
+const mockStore = configureStore([]);
 
 describe("SearchBar", () => {
+  let store: Store;
+
+  beforeEach(() => {
+    store = mockStore({
+      news: {
+        articles: [],
+        favorites: [],
+        searchQuery: "",
+        category: "general",
+        status: "idle",
+      },
+    });
+    store.dispatch = jest.fn();
+  });
+
   test("should update query when typing", () => {
     render(
       <Provider store={store}>
@@ -14,6 +33,6 @@ describe("SearchBar", () => {
     const input = screen.getByPlaceholderText(/tìm kiếm tin tức/i);
     fireEvent.change(input, { target: { value: "Sport" } });
 
-    expect(store.getState().news.searchQuery).toBe("Sport");
+    expect(store.dispatch).toHaveBeenCalledWith(setSearchQuery("React"));
   });
 });
