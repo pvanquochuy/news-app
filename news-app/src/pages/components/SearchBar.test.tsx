@@ -12,8 +12,8 @@ describe("SearchBar", () => {
     );
 
     const input = screen.getByPlaceholderText(/tìm kiếm tin tức/i);
-    fireEvent.change(input, { target: { value: "React" } });
+    fireEvent.change(input, { target: { value: "Sport" } });
 
-    expect(store.getState().news.searchQuery).toBe("React");
+    expect(store.getState().news.searchQuery).toBe("Sport");
   });
 });
