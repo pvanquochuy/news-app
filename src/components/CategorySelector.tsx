@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import { fetchNews, setCategory } from "../features/newsSlice";
+import { setCategory } from "../features/newsSlice";
 import "../styles/CategorySelector.css";
 
 const categories = [
@@ -21,7 +21,6 @@ const CategorySelector = () => {
 
   const handleCategoryChange = (category: string) => {
     dispatch(setCategory(category));
-    dispatch(fetchNews(category));
   };
 
   return (
