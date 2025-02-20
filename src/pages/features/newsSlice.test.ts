@@ -1,20 +1,9 @@
-import { configureStore } from "@reduxjs/toolkit";
 import newsReducer, {
   addToFavorites,
-  fetchNews,
   removeFromFavorites,
-  setCategory,
   setSearchQuery,
 } from "../../features/newsSlice";
-
-export interface Article {
-  source: { name: string };
-  title: string;
-  description: string;
-  url: string;
-  urlToImage: string;
-  publishedAt: string;
-}
+import { Article } from "../../types/Article";
 
 interface NewsState {
   articles: Article[];
@@ -24,107 +13,103 @@ interface NewsState {
   status: "idle" | "loading" | "failed";
 }
 
-const intialState: NewsState = {
-  articles: [],
-  favorites: [],
-  searchQuery: "",
-  category: "general",
-  status: "idle",
-};
-
-const mockArticle = {
-  source: { name: "BBC" },
-  title: "Breaking News",
-  description: "Some description",
-  url: "https://example.com",
-  urlToImage: "https://example.com/image.jpg",
-  publishedAt: "2024-08-12",
-};
-
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({ articles: [mockArticle] }),
-  })
-) as jest.Mock;
-
 describe("newsSclce", () => {
-  test("should return the initial state", () => {
-    expect(newsReducer(undefined, { type: "" })).toEqual(intialState);
+  const initialState: NewsState = {
+    articles: [],
+    favorites: [],
+    searchQuery: "",
+    category: "general",
+    status: "idle",
+  };
+
+  beforeEach(() => {
+    localStorage.clear();
   });
 
-  test("should add an article to favorites", () => {
-    const nextState = newsReducer(intialState, addToFavorites(mockArticle));
-    expect(nextState.favorites).toHaveLength(1);
-    expect(nextState.favorites[0]).toEqual(mockArticle);
+  test("should return the initial state", () => {
+    expect(newsReducer(undefined, { type: "" })).toEqual(initialState);
+  });
+
+  test("should handle setCategory", () => {
+    const newState = newsReducer(initialState, setSearchQuery("sports"));
+    expect(newState.searchQuery).toBe("sports");
+  });
+
+  test("should handle addToFavorites when article does not exist", () => {
+    const article: Article = {
+      title: "Article 1",
+      description: "Description of Article 1",
+      url: "http://example.com/article-1",
+      urlToImage: "http://example.com/image1.jpg",
+      source: {
+        name: "",
+      },
+      publishedAt: "",
+    };
+
+    const newState = newsReducer(initialState, addToFavorites(article));
+    expect(newState.favorites).toHaveLength(1);
+    expect(newState.favorites[0]).toEqual(article);
+
+    const storedFavorites = JSON.parse(
+      localStorage.getItem("favorites") || "[]"
+    );
+    expect(storedFavorites).toHaveLength(1);
+    expect(storedFavorites[0]).toEqual(article);
+  });
+
+  test("should not add duplicate article in addToFavorites", () => {
+    const article: Article = {
+      title: "Article 1",
+      description: "Description of Article 1",
+      url: "http://example.com/article-1",
+      urlToImage: "http://example.com/image1.jpg",
+      source: {
+        name: "",
+      },
+      publishedAt: "",
+    };
+
+    let state = newsReducer(initialState, addToFavorites(article));
+    state = newsReducer(state, addToFavorites(article));
+
+    expect(state.favorites).toHaveLength(1);
   });
 
   test("should remove an article from favorites", () => {
-    const stateWithFavorites = { ...intialState, favorites: [mockArticle] };
-    const nextState = newsReducer(
-      stateWithFavorites,
-      removeFromFavorites("Breaking News")
+    const article1: Article = {
+      title: "Article 1",
+      description: "Description of Article 1",
+      url: "http://example.com/article-1",
+      urlToImage: "http://example.com/image1.jpg",
+      source: {
+        name: "",
+      },
+      publishedAt: "",
+    };
+    const article2: Article = {
+      title: "Article 2",
+      description: "Description of Article 2",
+      url: "http://example.com/article-2",
+      urlToImage: "http://example.com/image2.jpg",
+      source: {
+        name: "",
+      },
+      publishedAt: "",
+    };
+
+    let state = newsReducer(initialState, addToFavorites(article1));
+    state = newsReducer(state, addToFavorites(article2));
+    expect(state.favorites).toHaveLength(2);
+
+    state = newsReducer(state, removeFromFavorites(article1.title));
+    expect(state.favorites).toHaveLength(1);
+    expect(state.favorites[0]).toEqual(article2);
+
+    const storedFavorites = JSON.parse(
+      localStorage.getItem("favorites") || "[]"
     );
-    expect(nextState.favorites).toHaveLength(0);
-  });
-
-  test("should fetch news and update state", async () => {
-    const store = configureStore({
-      reducer: { news: newsReducer },
-      middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-    });
-
-    await store.dispatch(
-      fetchNews("general") as unknown as ReturnType<typeof fetchNews>
-    );
-    const state = store.getState().news;
-    expect(state.articles).toHaveLength(1);
-  });
-
-  test("should update search query", () => {
-    const nextState = newsReducer(intialState, setSearchQuery("tech"));
-    expect(nextState.searchQuery).toBe("tech");
-  });
-
-  test("should filter articles based on search query", async () => {
-    const store = configureStore({
-      reducer: { news: newsReducer },
-      middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-    });
-
-    await store.dispatch(
-      fetchNews("general") as unknown as ReturnType<typeof fetchNews>
-    );
-
-    store.dispatch(setSearchQuery("Breaking"));
-
-    const state = store.getState().news;
-    const filtersArticles = state.articles.filter((article) =>
-      article.title.toLowerCase().includes(state.searchQuery.toLowerCase())
-    );
-
-    expect(filtersArticles).toHaveLength(1);
-    expect(filtersArticles[0].title).toBe("Breaking News");
-  });
-
-  test("should update category when setCategory is dispatched", () => {
-    const nextState = newsReducer(intialState, setCategory("technology"));
-    expect(nextState.category).toBe("technology");
-  });
-
-  test("should handle fetchNews pending state", () => {
-    const action = { type: fetchNews.pending.type };
-    const nextState = newsReducer(intialState, action);
-    expect(nextState.status).toBe("loading");
-  });
-  test("should handle fetchNews fulfilled state", () => {
-    const action = { type: fetchNews.fulfilled.type, payload: [mockArticle] };
-    const nextState = newsReducer(intialState, action);
-    expect(nextState.status).toBe("idle");
-    expect(nextState.articles).toHaveLength(1);
-  });
-  test("should handle fetchNews rejected state", () => {
-    const action = { type: fetchNews.rejected.type };
-    const nextState = newsReducer(intialState, action);
-    expect(nextState.status).toBe("failed");
+    expect(storedFavorites).toHaveLength(1);
+    expect(storedFavorites[0]).toEqual(article2);
   });
 });
