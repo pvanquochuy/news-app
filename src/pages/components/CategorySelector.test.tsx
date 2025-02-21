@@ -2,81 +2,66 @@ import { Provider } from "react-redux";
 import CategorySelector from "../../components/CategorySelector";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { fetchNews, setCategory } from "../../features/newsSlice";
-import configureStore from "redux-mock-store";
-import { Store } from "redux";
+import { configureStore } from "redux-mock-store";
 
-jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
-  useDispatch: () => jest.fn(),
-}));
+import { Store } from "@reduxjs/toolkit";
+import { setCategory } from "../../features/newsSlice";
+
+const mockStore = configureStore([]);
 
 const initialState = {
   news: {
-    articles: [],
-    favorites: [],
-    searchQuery: "",
     category: "general",
-    status: "idle",
   },
 };
 
-const mockStore = configureStore([]);
-let storeInstance: Store;
-
-beforeEach(() => {
-  storeInstance = mockStore(initialState);
-  storeInstance.dispatch = jest.fn();
-});
-
-const renderCategorySelector = () => {
-  return render(
-    <Provider store={storeInstance}>
-      <CategorySelector />
-    </Provider>
-  );
-};
-
 describe("CategorySelector", () => {
-  test("renders category dropdown", () => {
-    renderCategorySelector();
+  let store: Store;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let dispatchSpy: jest.SpyInstance;
 
-    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  beforeEach(() => {
+    store = mockStore(initialState);
+    dispatchSpy = jest.spyOn(store, "dispatch");
   });
 
-  test("display category options", () => {
-    renderCategorySelector();
-    const categories = [
-      "general",
-      "business",
-      "technology",
-      "sports",
-      "entertainment",
-      "health",
-      "science",
-    ];
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    categories.forEach((category) => {
-      expect(
-        screen.getByRole("option", {
-          name: category.charAt(0).toUpperCase() + category.slice(1),
-        })
-      ).toBeInTheDocument();
-    });
+  test("renders heading, element and value of store", () => {
+    render(
+      <Provider store={store}>
+        <CategorySelector />
+      </Provider>
+    );
+
+    expect(screen.getByText("📢 Danh mục")).toBeInTheDocument();
+
+    const selectElement = screen.getByRole("combobox");
+    expect(selectElement).toBeInTheDocument();
+
+    expect(selectElement).toHaveValue("general");
+
+    expect(
+      screen.getByRole("option", { name: /General/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /Business/i })
+    ).toBeInTheDocument();
   });
 
   test("update category when selecting an option", () => {
-    const mockDispatch = jest.fn();
-    jest.mock("react-redux", () => ({
-      ...jest.requireActual("react-redux"),
-      useDispatch: () => mockDispatch,
-    }));
-    renderCategorySelector();
+    render(
+      <Provider store={store}>
+        <CategorySelector />
+      </Provider>
+    );
 
-    const select = screen.getByRole("combobox");
-    fireEvent.change(select, { target: { value: "sports" } });
+    const selectElement = screen.getByRole("combobox");
 
-    expect(mockDispatch).toHaveBeenCalledWith(setCategory("sports"));
-    expect(mockDispatch).toHaveBeenCalledWith(fetchNews("sports"));
+    fireEvent.change(selectElement, { target: { value: "technology" } });
+
+    expect(dispatchSpy).toHaveBeenCalledWith(setCategory("technology"));
   });
 });

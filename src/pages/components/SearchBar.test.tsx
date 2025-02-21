@@ -33,6 +33,6 @@ describe("SearchBar", () => {
     const input = screen.getByPlaceholderText(/tìm kiếm tin tức/i);
     fireEvent.change(input, { target: { value: "Sport" } });
 
-    expect(store.dispatch).toHaveBeenCalledWith(setSearchQuery("React"));
+    expect(store.dispatch).toHaveBeenCalledWith(setSearchQuery("Sport"));
   });
 });
