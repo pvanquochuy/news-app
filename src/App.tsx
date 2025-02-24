@@ -5,14 +5,15 @@ import NewsList from "./components/NewsList";
 import FavoriteList from "./components/FavoriteList";
 import SearchBar from "./components/SearchBar";
 import CategorySelector from "./components/CategorySelector";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
     <Provider store={store}>
       <div className="main-content">
         <div className="news-section">
-          <h1>📰 Tin Tức Mới</h1>
           <CategorySelector />
+          <h1>📰 Tin Tức Mới</h1>
           <SearchBar />
           <NewsList />
         </div>
