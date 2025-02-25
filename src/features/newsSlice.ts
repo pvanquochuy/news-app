@@ -6,6 +6,9 @@ interface NewsState {
   favorites: Article[];
   searchQuery: string;
   category: string;
+  startDate: string;
+  endDate: string;
+  author: string;
   status: "idle" | "loading" | "failed";
 }
 
@@ -19,6 +22,9 @@ const initialState: NewsState = {
   favorites: loadFavoritesFromLocalStorage(),
   searchQuery: "",
   category: "general",
+  startDate: "",
+  endDate: "",
+  author: "",
   status: "idle",
 };
 
@@ -47,6 +53,15 @@ const newsSlice = createSlice({
     setCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
     },
+    setStartDate: (state, action: PayloadAction<string>) => {
+      state.startDate = action.payload;
+    },
+    setEndDate: (state, action: PayloadAction<string>) => {
+      state.endDate = action.payload;
+    },
+    setAuthor: (state, action: PayloadAction<string>) => {
+      state.author = action.payload;
+    },
   },
 });
 
@@ -55,5 +70,8 @@ export const {
   removeFromFavorites,
   setSearchQuery,
   setCategory,
+  setStartDate,
+  setEndDate,
+  setAuthor,
 } = newsSlice.actions;
 export default newsSlice.reducer;

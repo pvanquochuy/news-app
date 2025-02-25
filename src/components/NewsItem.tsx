@@ -1,5 +1,9 @@
 import React from "react";
 import { Article } from "../types/Article";
+import { useNavigate } from "react-router-dom";
+import { generateArticleId, generateSlug } from "../utils/helpers";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 interface NewsItemProps {
   article: Article;
@@ -7,6 +11,13 @@ interface NewsItemProps {
 }
 
 const NewsItem: React.FC<NewsItemProps> = ({ article, onAddFavorite }) => {
+  const navigate = useNavigate();
+  const category =
+    useSelector((state: RootState) => state.news.category) || "general";
+
+  const articleId = generateArticleId(article.url);
+  const slug = generateSlug(article.title);
+
   const truncatedTitle =
     article.title && article.title.length > 60
       ? article.title.substring(0, 60) + "..."
@@ -50,14 +61,16 @@ const NewsItem: React.FC<NewsItemProps> = ({ article, onAddFavorite }) => {
           >
             ❤️ Yêu thích
           </button>
-          <a
-            href={article.url}
-            className="btn btn-secondary ms-2"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            className="btn btn-secondary"
+            onClick={() =>
+              navigate(`/${category}/${articleId}/${slug}`, {
+                state: { article },
+              })
+            }
           >
-            Đọc thêm
-          </a>
+            Chi tiết
+          </button>
         </div>
       </div>
     </div>
