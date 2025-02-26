@@ -13,6 +13,8 @@ const mockArticle = {
   url: "https://example.com",
   urlToImage: "https://example.com/image.jpg",
   publishedAt: "2024-08-12",
+  content: "Full content of the article",
+  author: "Author Name",
 };
 
 const setupStore = () => {

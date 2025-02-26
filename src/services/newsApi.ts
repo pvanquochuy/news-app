@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Article } from "../types/Article";
 
-const API_KEY = "c55e643f7ab247b4a774755e7cc1c2fe";
+const API_KEY = "d80ccd8a086b4f2bbb08fe2160b55326";
 
 interface TopHeadlinesResponse {
   status: string;
