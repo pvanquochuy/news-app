@@ -1,11 +1,53 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import { Article } from "../types/Article";
+import { useGetTopHeadlinesQuery } from "../services/newsApi";
+import NewsItem from "./NewsItem";
+import "../styles/NewsDetail.css";
 
 const NewsDetail: React.FC = () => {
   const location = useLocation();
-  const article = location.state?.article as Article;
+  const navigate = useNavigate();
+  const [article, setArticle] = useState<Article | null>(null);
+  const [randomArticles, setRandomArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.article) {
+      setLoading(true); // Bắt đầu tải
+      setArticle(null);
+      setTimeout(() => {
+        setArticle(location.state.article); // Hiển thị bài mới sau 500ms
+        setLoading(false);
+      }, 300);
+    }
+  }, [location.state]);
+
+  const category = "general";
+  const { data, error, isLoading } = useGetTopHeadlinesQuery({
+    category,
+    pageSize: 10,
+  });
+
+  useEffect(() => {
+    if (data?.articles) {
+      const filteredArticles = data.articles.filter(
+        (a) => a.title !== article?.title
+      );
+      const shuffled = filteredArticles.sort(() => 0.5 - Math.random());
+      setRandomArticles(shuffled.slice(0, 4));
+    }
+  }, [data, article]);
+
+  if (loading) {
+    return (
+      <Container fluid className="my-5 text-center">
+        <Spinner animation="border" />
+        <h2 className="mt-2">Đang tải bài viết...</h2>
+      </Container>
+    );
+  }
 
   if (!article) {
     return (
@@ -16,7 +58,7 @@ const NewsDetail: React.FC = () => {
   }
 
   return (
-    <Container fluid className="p-0">
+    <Container fluid className={`p-0 fade-in ${article ? "show" : ""}`}>
       <Row className="gx-0">
         <Col
           md={6}
@@ -32,50 +74,58 @@ const NewsDetail: React.FC = () => {
           </p>
           {article.description && <p>{article.description}</p>}
           {article.content && <p>{article.content} </p>}
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium
-          neque quisquam aliquid, illo similique non praesentium ea eius
-          accusamus animi ex aperiam. Molestias optio deserunt asperiores
-          praesentium tenetur quis illo. Quasi in nisi corrupti molestiae
-          possimus eaque reiciendis aspernatur vero dicta at accusamus quibusdam
-          voluptatem molestias, deleniti totam assumenda error aperiam est sunt
-          veritatis sit consectetur. Reprehenderit dolore quis explicabo!
-          Dolorum vel placeat culpa rerum, voluptates libero neque sed nostrum
-          excepturi voluptas suscipit. Reprehenderit ad, modi, sequi id adipisci
-          explicabo ducimus consequatur facilis culpa neque numquam distinctio
-          ab, ipsam tempora? Quae ad aut saepe recusandae, quis consequuntur,
-          beatae nulla suscipit, a exercitationem nobis labore voluptate eveniet
-          esse sed reprehenderit asperiores adipisci impedit enim. Tenetur eius
-          cupiditate accusantium. Voluptates, atque culpa? Sed animi, quaerat
-          incidunt qui natus ipsum, totam ipsa, dolor ut voluptas architecto!
-          Maxime consectetur a mollitia esse. Velit, porro? Eligendi libero
-          molestiae voluptatibus porro molestias repellat eos nulla dolorem.
-          Illo aliquam amet voluptates aperiam neque quas, voluptatem
-          consequatur nesciunt aliquid tempora velit illum voluptatibus quis
-          culpa autem ratione minus corrupti voluptatum asperiores! Magni
-          tenetur nobis dolore quia natus autem. Praesentium nostrum dolorem
-          beatae. Ex doloremque, eos iure ducimus porro, quis, deleniti odit
-          voluptatem esse recusandae culpa. Cum nisi impedit mollitia obcaecati
-          modi illo, consequuntur non minima quo, minus officia! Enim sint
-          molestiae, ipsam architecto voluptas minus maiores. Fugiat, quaerat
-          recusandae possimus voluptatem iure officia dolorem minima at sed
-          debitis adipisci, voluptatum rerum omnis, quas nostrum quibusdam!
-          Unde, corporis accusantium? Quam, deleniti corrupti? Qui corporis
-          excepturi sint fugiat eveniet error iusto, est nemo dolores veritatis
-          recusandae pariatur cum, sapiente perspiciatis cumque earum officiis
-          nisi! Ullam ea consequatur non adipisci perferendis. Similique quam
-          nisi excepturi corporis fuga neque veniam consequuntur reiciendis
-          maxime! Amet libero eos molestias alias ipsum temporibus quidem non in
-          dolorum eligendi! Suscipit assumenda doloremque, praesentium itaque et
-          rem.
-          <Button
-            variant="primary"
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3"
-          >
-            Xem Thêm
-          </Button>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora
+          laborum possimus voluptatem temporibus aut praesentium qui et at
+          beatae. Accusantium accusamus a earum nihil culpa adipisci
+          exercitationem ea non nostrum? Fuga temporibus ipsa earum ab! Incidunt
+          consequatur delectus expedita itaque earum repellendus iusto
+          necessitatibus qui, magnam omnis deleniti at ipsa veritatis cumque
+          recusandae doloribus perspiciatis velit explicabo consequuntur libero
+          consectetur! Veritatis consectetur laudantium vero eaque, ut, ad sequi
+          labore voluptates amet consequuntur laborum tempora in, illo
+          temporibus architecto quam delectus quidem adipisci accusantium? Quas
+          similique ab sunt error corrupti velit? Velit dolorum beatae quae
+          incidunt soluta sunt. Officiis, minus voluptatibus dolorum amet nulla
+          vel, commodi mollitia nobis eveniet perspiciatis officia, aperiam
+          voluptate qui velit asperiores quibusdam corrupti doloremque eius?
+          Molestias? Nihil ut, nostrum fugiat quas nulla reprehenderit
+          accusamus. Porro saepe soluta, facilis provident ratione veniam
+          aperiam animi laudantium id consequatur repellat sapiente! Nulla
+          quaerat expedita eligendi, dolorem eius placeat nobis. Laborum
+          voluptatem dicta quia error eligendi maxime illo, nulla numquam
+          adipisci quis laudantium ab magni ex autem architecto excepturi quasi
+          necessitatibus exercitationem in? Doloribus laboriosam numquam non
+          molestias voluptas rem! Nobis, impedit iusto corporis quos error
+          corrupti iure quia quod dolorum vitae explicabo non recusandae animi
+          cumque illum eaque eum, neque voluptatibus officiis obcaecati sit
+          aperiam. Molestias dignissimos culpa reiciendis. Iure maxime ad
+          reiciendis cupiditate, quidem corporis facere id quibusdam animi
+          recusandae voluptas fugit. Dolor delectus nesciunt ipsam quaerat.
+          Architecto fugiat libero, similique quas magni explicabo quo in velit
+          sapiente. Laudantium illum vero dicta officia commodi nisi nulla ipsa?
+          Dolores quos, voluptate soluta quasi praesentium necessitatibus animi
+          fugit nulla veniam, sed eveniet ab numquam nesciunt harum ea laborum
+          quisquam! Voluptate! Natus reprehenderit itaque molestias voluptatem
+          rerum aut qui voluptatibus minus impedit magni? Quam non aliquid
+          consequuntur tempore totam quod dolorum, minus assumenda blanditiis,
+          eaque, rem atque dolorem iste. Autem, praesentium.
+          <div className="d-flex gap-3 mt-3">
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/")} // Quay lại trang chủ
+            >
+              ⬅ Quay lại
+            </Button>
+
+            <Button
+              variant="primary"
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Xem Thêm
+            </Button>
+          </div>
         </Col>
 
         <Col md={6}>
@@ -97,20 +147,40 @@ const NewsDetail: React.FC = () => {
       </Row>
 
       {/* Hàng 2: Khối màu nổi bật phía dưới */}
-      <Row className="gx-0">
+      <Row className="gx-0 mt-4">
         <Col
           md={12}
-          style={{
-            backgroundColor: "#ffeb00", // bạn có thể thay đổi màu tùy thích
-            color: "#000",
-            padding: "2rem",
-          }}
+          style={{ backgroundColor: "#ffeb00", color: "#000", padding: "2rem" }}
         >
-          <h4 style={{ fontWeight: "bold" }}>Tin liên quan</h4>
-          <p>
-            Ở đây bạn có thể thêm thông tin phụ, tóm tắt khác, hoặc bất kỳ nội
-            dung nổi bật nào bạn muốn hiển thị dưới bài viết.
-          </p>
+          <h4 className="fw-bold">📰 Tin liên quan</h4>
+
+          {isLoading && (
+            <div className="text-center">
+              <Spinner animation="border" />
+            </div>
+          )}
+
+          {error && <p className="text-danger">Lỗi khi tải tin liên quan!</p>}
+
+          {data?.articles && randomArticles.length > 0 ? (
+            <Row className="d-flex flex-wrap justify-content-start">
+              {randomArticles.map((relatedArticle, index) => (
+                <Col key={index} md={3} sm={6} xs={12} className="mb-3">
+                  <NewsItem
+                    article={relatedArticle}
+                    onAddFavorite={() => {}}
+                    onClick={() =>
+                      navigate("/news-detail", {
+                        state: { article: relatedArticle },
+                      })
+                    }
+                  />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            !isLoading && <p>Không có tin liên quan</p>
+          )}
         </Col>
       </Row>
     </Container>

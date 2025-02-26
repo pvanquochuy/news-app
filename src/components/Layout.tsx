@@ -3,7 +3,6 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import CategorySelector from "./CategorySelector";
 import SearchBar from "./SearchBar";
-import FavoriteList from "./FavoriteList";
 import "../styles/global.css";
 
 const Layout = () => {

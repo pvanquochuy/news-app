@@ -1,6 +1,6 @@
 import React from "react";
 import { Article } from "../types/Article";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { generateArticleId, generateSlug } from "../utils/helpers";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -8,6 +8,7 @@ import { RootState } from "../store/store";
 interface NewsItemProps {
   article: Article;
   onAddFavorite: (article: Article) => void;
+  onClick?: (article: Article) => void;
 }
 
 const NewsItem: React.FC<NewsItemProps> = ({ article, onAddFavorite }) => {
@@ -61,16 +62,13 @@ const NewsItem: React.FC<NewsItemProps> = ({ article, onAddFavorite }) => {
           >
             ❤️ Yêu thích
           </button>
-          <button
+          <Link
+            to={`/${category}/${articleId}/${slug}`}
+            state={{ article }}
             className="btn btn-secondary"
-            onClick={() =>
-              navigate(`/${category}/${articleId}/${slug}`, {
-                state: { article },
-              })
-            }
           >
             Chi tiết
-          </button>
+          </Link>
         </div>
       </div>
     </div>
