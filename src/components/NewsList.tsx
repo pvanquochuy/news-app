@@ -9,7 +9,7 @@ import { Article } from "../types/Article";
 
 const NewsList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { searchQuery, category } = useSelector(
+  const { searchQuery, category, startDate, endDate, author } = useSelector(
     (state: RootState) => state.news
   );
 
@@ -29,9 +29,22 @@ const NewsList = () => {
   if (error) return <div>Lỗi khi tải dữ liệu!</div>;
 
   const filteredArticles =
-    data?.articles.filter((article) =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+    data?.articles.filter((article) => {
+      const matchesQuery =
+        !searchQuery ||
+        article.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesAuthor =
+        !author ||
+        (article.author &&
+          article.author.toLowerCase().includes(author.toLowerCase()));
+
+      const matchesDate =
+        (!startDate || new Date(article.publishedAt) >= new Date(startDate)) &&
+        (!endDate || new Date(article.publishedAt) <= new Date(endDate));
+
+      return matchesQuery && matchesAuthor && matchesDate;
+    }) || [];
 
   const totalPages = data ? Math.ceil(data.totalResults / pageSize) : 1;
 
