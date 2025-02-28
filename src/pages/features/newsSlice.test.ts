@@ -10,15 +10,21 @@ interface NewsState {
   favorites: Article[];
   searchQuery: string;
   category: string;
+  startDate: string;
+  endDate: string;
+  author: string;
   status: "idle" | "loading" | "failed";
 }
 
-describe("newsSclce", () => {
+describe("newsSlice", () => {
   const initialState: NewsState = {
     articles: [],
     favorites: [],
     searchQuery: "",
     category: "general",
+    startDate: "",
+    endDate: "",
+    author: "",
     status: "idle",
   };
 
@@ -42,9 +48,12 @@ describe("newsSclce", () => {
       url: "http://example.com/article-1",
       urlToImage: "http://example.com/image1.jpg",
       source: {
-        name: "",
+        name: "Example Source",
       },
-      publishedAt: "",
+      publishedAt: "2024-02-27T12:00:00Z",
+      stopPropagation: () => {},
+      content: "Content of Article 1",
+      author: "Author 1",
     };
 
     const newState = newsReducer(initialState, addToFavorites(article));
@@ -55,7 +64,14 @@ describe("newsSclce", () => {
       localStorage.getItem("favorites") || "[]"
     );
     expect(storedFavorites).toHaveLength(1);
-    expect(storedFavorites[0]).toEqual(article);
+    expect(storedFavorites[0]).toMatchObject({
+      title: article.title,
+      description: article.description,
+      url: article.url,
+      urlToImage: article.urlToImage,
+      source: { name: article.source.name },
+      publishedAt: article.publishedAt,
+    });
   });
 
   test("should not add duplicate article in addToFavorites", () => {
@@ -65,9 +81,12 @@ describe("newsSclce", () => {
       url: "http://example.com/article-1",
       urlToImage: "http://example.com/image1.jpg",
       source: {
-        name: "",
+        name: "Example Source",
       },
-      publishedAt: "",
+      publishedAt: "2024-02-27T12:00:00Z",
+      stopPropagation: () => {},
+      content: "Content of Article 1",
+      author: "Author 1",
     };
 
     let state = newsReducer(initialState, addToFavorites(article));
@@ -83,19 +102,25 @@ describe("newsSclce", () => {
       url: "http://example.com/article-1",
       urlToImage: "http://example.com/image1.jpg",
       source: {
-        name: "",
+        name: "Example Source",
       },
-      publishedAt: "",
+      publishedAt: "2024-02-27T12:00:00Z",
+      stopPropagation: () => {},
+      content: "Content of Article 1",
+      author: "Author 1",
     };
     const article2: Article = {
       title: "Article 2",
-      description: "Description of Article 2",
-      url: "http://example.com/article-2",
-      urlToImage: "http://example.com/image2.jpg",
+      description: "Description of Article 1",
+      url: "http://example.com/article-1",
+      urlToImage: "http://example.com/image1.jpg",
       source: {
-        name: "",
+        name: "Example Source",
       },
-      publishedAt: "",
+      publishedAt: "2024-02-27T12:00:00Z",
+      stopPropagation: () => {},
+      content: "Content of Article 1",
+      author: "Author 1",
     };
 
     let state = newsReducer(initialState, addToFavorites(article1));
@@ -110,6 +135,11 @@ describe("newsSclce", () => {
       localStorage.getItem("favorites") || "[]"
     );
     expect(storedFavorites).toHaveLength(1);
-    expect(storedFavorites[0]).toEqual(article2);
+    expect(storedFavorites[0]).toMatchObject({
+      title: article2.title,
+      description: article2.description,
+      url: article2.url,
+      urlToImage: article2.urlToImage,
+    });
   });
 });

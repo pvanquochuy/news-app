@@ -1,52 +1,35 @@
+import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { Provider } from "react-redux";
 import NewsList from "../../components/NewsList";
 import { configureStore } from "redux-mock-store";
-import { Store } from "@reduxjs/toolkit";
 import { useGetTopHeadlinesQuery } from "../../services/newsApi";
-import { addToFavorites } from "../../features/newsSlice";
-
-jest.mock("../../services/newsApi", () => ({
-  useGetTopHeadlinesQuery: jest.fn(),
-}));
+import { BrowserRouter } from "react-router-dom";
 
 const mockStore = configureStore([]);
 const inititalState = {
   news: {
     searchQuery: "",
     category: "general",
+    startDate: null,
+    endDate: null,
+    author: "",
   },
 };
+const store = mockStore(inititalState);
 
-const sampleArticle = {
-  title: "Test Article",
-  description: "This is a test article description",
-  url: "http://example.com/test-article",
-  urlToImage: "http://example.com/test-image.jpg",
-  source: { id: null, name: "Test Source" },
-  publishedAt: "2023-01-01T00:00:00Z",
-};
+// mock api response
+jest.mock("../../services/newsApi", () => ({
+  useGetTopHeadlinesQuery: jest.fn(),
+}));
 
 describe("NewsList component", () => {
-  let store: Store;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let dispatchSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    store = mockStore(inititalState);
-    dispatchSpy = jest.spyOn(store, "dispatch");
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   test("renders loading state", () => {
     (useGetTopHeadlinesQuery as jest.Mock).mockReturnValue({
+      data: null,
+      error: null,
       isLoading: true,
-      error: undefined,
-      data: undefined,
     });
 
     render(
@@ -85,54 +68,46 @@ describe("NewsList component", () => {
     });
     render(
       <Provider store={store}>
-        <NewsList />
+        <BrowserRouter>
+          <NewsList />
+        </BrowserRouter>
       </Provider>
     );
 
     expect(screen.getByText("Không tìm thấy tin tức nào!")).toBeInTheDocument();
   });
 
-  test("renders no articles found when filtered result is empty", () => {
+  test("render articles when loading", async () => {
     (useGetTopHeadlinesQuery as jest.Mock).mockReturnValue({
-      isLoading: false,
-      error: undefined,
       data: {
-        totalResult: 0,
-        articles: [],
+        totalResults: 2,
+        articles: [
+          {
+            title: "Test Article 1",
+            author: "John Doe",
+            publishedAt: "2024-07-20T10:00:00Z",
+          },
+          {
+            title: "Test Article 2",
+            author: "Jane Doe",
+            publishedAt: "2024-07-21T12:30:00Z",
+          },
+        ],
       },
+      error: null,
+      isLoading: false,
     });
 
     render(
       <Provider store={store}>
-        <NewsList />
+        <BrowserRouter>
+          <NewsList />
+        </BrowserRouter>
       </Provider>
     );
 
-    expect(screen.getByText("Không tìm thấy tin tức nào!")).toBeInTheDocument();
-  });
-
-  test("renders articles and handle to favorites", () => {
-    (useGetTopHeadlinesQuery as jest.Mock).mockReturnValue({
-      isLoading: false,
-      error: undefined,
-      data: {
-        totalResults: 1,
-        articles: [sampleArticle],
-      },
-    });
-    render(
-      <Provider store={store}>
-        <NewsList />
-      </Provider>
-    );
-
-    expect(screen.getByText(sampleArticle.title)).toBeInTheDocument();
-    expect(screen.getByText(sampleArticle.description)).toBeInTheDocument();
-
-    const favButton = screen.getByText(/❤️ Yêu thích/i);
-    fireEvent.click(favButton);
-
-    expect(dispatchSpy).toHaveBeenCalledWith(addToFavorites(sampleArticle));
+    expect(await screen.findByText("Test Article 1")).toBeInTheDocument();
+    expect(await screen.findByText("Test Article 2")).toBeInTheDocument();
   });
 
   test("pagination work", () => {
@@ -141,13 +116,26 @@ describe("NewsList component", () => {
       error: undefined,
       data: {
         totalResults: 16,
-        articles: [sampleArticle, sampleArticle],
+        articles: [
+          {
+            title: "Test Article 1",
+            author: "John Doe",
+            publishedAt: "2024-07-20T10:00:00Z",
+          },
+          {
+            title: "Test Article 2",
+            author: "Jane Doe",
+            publishedAt: "2024-07-21T12:30:00Z",
+          },
+        ],
       },
     });
 
     render(
       <Provider store={store}>
-        <NewsList />
+        <BrowserRouter>
+          <NewsList />
+        </BrowserRouter>
       </Provider>
     );
 

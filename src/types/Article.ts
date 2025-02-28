@@ -1,4 +1,5 @@
 export interface Article {
+  stopPropagation(): unknown;
   source: { name: string };
   title: string;
   description: string;

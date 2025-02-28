@@ -1,6 +1,6 @@
 import React from "react";
 import { Article } from "../types/Article";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { generateArticleId, generateSlug } from "../utils/helpers";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -12,7 +12,6 @@ interface NewsItemProps {
 }
 
 const NewsItem: React.FC<NewsItemProps> = ({ article, onAddFavorite }) => {
-  const navigate = useNavigate();
   const category =
     useSelector((state: RootState) => state.news.category) || "general";
 
