@@ -15,10 +15,10 @@ const NewsDetail: React.FC = () => {
 
   useEffect(() => {
     if (location.state?.article) {
-      setLoading(true); // Bắt đầu tải
+      setLoading(true);
       setArticle(null);
       setTimeout(() => {
-        setArticle(location.state.article); // Hiển thị bài mới sau 500ms
+        setArticle(location.state.article);
         setLoading(false);
       }, 300);
     }
@@ -114,7 +114,7 @@ const NewsDetail: React.FC = () => {
               variant="secondary"
               onClick={() => navigate("/")} // Quay lại trang chủ
             >
-              ⬅ Quay lại
+              Quay lại
             </Button>
 
             <Button
