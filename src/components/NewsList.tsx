@@ -4,10 +4,12 @@ import { addToFavorites } from "../features/newsSlice";
 import "../styles/newsList.css";
 import { useGetTopHeadlinesQuery } from "../services/newsApi";
 import { useEffect, useState } from "react";
+import NewsItem from "./NewsItem";
+import { Article } from "../types/Article";
 
 const NewsList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { searchQuery, category } = useSelector(
+  const { searchQuery, category, startDate, endDate, author } = useSelector(
     (state: RootState) => state.news
   );
 
@@ -27,33 +29,43 @@ const NewsList = () => {
   if (error) return <div>Lỗi khi tải dữ liệu!</div>;
 
   const filteredArticles =
-    data?.articles.filter((article) =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+    data?.articles.filter((article) => {
+      const matchesQuery =
+        !searchQuery ||
+        article.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesAuthor =
+        !author ||
+        (article.author &&
+          article.author.toLowerCase().includes(author.toLowerCase()));
+
+      const matchesDate =
+        (!startDate || new Date(article.publishedAt) >= new Date(startDate)) &&
+        (!endDate || new Date(article.publishedAt) <= new Date(endDate));
+
+      return matchesQuery && matchesAuthor && matchesDate;
+    }) || [];
 
   const totalPages = data ? Math.ceil(data.totalResults / pageSize) : 1;
 
   return (
-    <div className="news-list">
+    <div>
       {filteredArticles.length === 0 ? (
-        <p>Không tìm thấy tin tức nào!</p>
+        <div className="no-results">Không tìm thấy tin tức nào!</div>
       ) : (
-        filteredArticles.map((articles) => (
-          <div key={articles.title} className="news-card">
-            <img src={articles.urlToImage} alt={articles.title} />
-            <h2>{articles.title}</h2>
-            <p>{articles.description}</p>
-            <button onClick={() => dispatch(addToFavorites(articles))}>
-              ❤️ Yêu thích
-            </button>
-            <a href={articles.url} target="_blank" rel="noopener noreferrer">
-              Đọc thêm
-            </a>
-          </div>
-        ))
+        <div className="news-list">
+          {filteredArticles.map((article, index) => (
+            <NewsItem
+              key={index}
+              article={article}
+              onAddFavorite={(article: Article) =>
+                dispatch(addToFavorites(article))
+              }
+            />
+          ))}
+        </div>
       )}
 
-      {/* Phần phân trang */}
       <div className="pagination">
         <button onClick={() => setPage(page - 1)} disabled={page === 1}>
           Prev

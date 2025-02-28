@@ -1,67 +1,76 @@
 import { Provider } from "react-redux";
 import CategorySelector from "../../components/CategorySelector";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { configureStore } from "redux-mock-store";
 
 import { Store } from "@reduxjs/toolkit";
+import userEvent from "@testing-library/user-event";
 import { setCategory } from "../../features/newsSlice";
 
 const mockStore = configureStore([]);
 
-const initialState = {
-  news: {
-    category: "general",
-  },
-};
-
 describe("CategorySelector", () => {
   let store: Store;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let dispatchSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    store = mockStore(initialState);
-    dispatchSpy = jest.spyOn(store, "dispatch");
+    store = mockStore({
+      news: { category: "general" },
+    });
+    store.dispatch = jest.fn();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test("renders heading, element and value of store", () => {
+  test("renders category selector", () => {
     render(
       <Provider store={store}>
         <CategorySelector />
       </Provider>
     );
 
-    expect(screen.getByText("📢 Danh mục")).toBeInTheDocument();
+    const categories = [
+      "General",
+      "Business",
+      "Technology",
+      "Sports",
+      "Entertainment",
+      "Health",
+      "Science",
+    ];
 
-    const selectElement = screen.getByRole("combobox");
-    expect(selectElement).toBeInTheDocument();
-
-    expect(selectElement).toHaveValue("general");
-
-    expect(
-      screen.getByRole("option", { name: /General/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("option", { name: /Business/i })
-    ).toBeInTheDocument();
+    categories.forEach((category) => {
+      expect(screen.getByText(category)).toBeInTheDocument();
+    });
   });
 
-  test("update category when selecting an option", () => {
+  test("should dispatch setCategory action when a category is clicked", () => {
+    store = mockStore({
+      news: { category: "technology" },
+    });
+
     render(
       <Provider store={store}>
         <CategorySelector />
       </Provider>
     );
 
-    const selectElement = screen.getByRole("combobox");
+    const activeCategory = screen.getByText("Technology");
+    expect(activeCategory).toHaveClass("active");
+  });
 
-    fireEvent.change(selectElement, { target: { value: "technology" } });
+  test("should dispatch setCategory action when a category is clicked", async () => {
+    render(
+      <Provider store={store}>
+        <CategorySelector />
+      </Provider>
+    );
 
-    expect(dispatchSpy).toHaveBeenCalledWith(setCategory("technology"));
+    const category = screen.getByText("Sports");
+    await userEvent.click(category);
+
+    expect(store.dispatch).toHaveBeenCalledWith(setCategory("sports"));
   });
 });

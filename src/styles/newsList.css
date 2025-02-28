@@ -1,10 +1,19 @@
 .news-list {
-  position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-top: 20px;
   margin-bottom: 70px;
+  /* Nếu muốn layout luôn giữ chiều cao tối thiểu, ví dụ: */
+  min-height: 400px;
+}
+
+.no-results {
+  grid-column: 1 / -1; /* Chiếm toàn bộ hàng */
+  text-align: center;
+  padding: 40px 0; /* Giữ kích thước và căn giữa thông báo */
+  font-size: 18px;
+  color: #555;
 }
 
 .news-card {
@@ -60,17 +69,11 @@
 
 /* pagination */
 .pagination {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px;
-  background-color: #fff;
-  border-top: 1px solid #ddd;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 1rem; /* Khoảng cách giữa các nút và text */
+  margin-top: 20px;
 }
 
 .pagination button {

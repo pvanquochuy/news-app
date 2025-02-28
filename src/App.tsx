@@ -1,27 +1,38 @@
-import { Provider } from "react-redux";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import "./styles/global.css";
-import { store } from "./store/store";
 import NewsList from "./components/NewsList";
 import FavoriteList from "./components/FavoriteList";
 import SearchBar from "./components/SearchBar";
 import CategorySelector from "./components/CategorySelector";
+import NewsDetail from "./components/NewsDetail";
 
 function App() {
   return (
-    <Provider store={store}>
+    <Router>
       <div className="main-content">
-        <div className="news-section">
-          <h1>📰 Tin Tức Mới</h1>
-          <CategorySelector />
-          <SearchBar />
-          <NewsList />
-        </div>
-        <div className="favorite-section">
-          <h2>💖 Mục yêu thích</h2>
-          <FavoriteList />
-        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <div className="news-section">
+                  <CategorySelector />
+                  <h1>📰 Tin Tức Mới</h1>
+                  <SearchBar />
+                  <NewsList />
+                </div>
+                <div className="favorite-section">
+                  <h2>💖 Mục yêu thích</h2>
+                  <FavoriteList />
+                </div>
+              </>
+            }
+          />
+          <Route path="/:category/:articleId/:slug" element={<NewsDetail />} />
+        </Routes>
       </div>
-    </Provider>
+    </Router>
   );
 }
 
