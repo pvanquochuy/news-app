@@ -12,6 +12,7 @@ interface TopHeadlinesResponse {
 export const newsApi = createApi({
   reducerPath: "newsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "https://newsapi.org/v2/" }),
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getTopHeadlines: builder.query<
       TopHeadlinesResponse,

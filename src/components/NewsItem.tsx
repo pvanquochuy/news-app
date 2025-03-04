@@ -13,7 +13,7 @@ interface NewsItemProps {
 
 const NewsItem: React.FC<NewsItemProps> = ({ article, onAddFavorite }) => {
   const category =
-    useSelector((state: RootState) => state.news.category) || "general";
+    useSelector((state: RootState) => state.news.filters.category) || "general";
 
   const articleId = generateArticleId(article.url);
   const slug = generateSlug(article.title);

@@ -1,42 +1,34 @@
 import { FormEvent, useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  setAuthor,
-  setCategory,
-  setEndDate,
-  setSearchQuery,
-  setStartDate,
-} from "../features/newsSlice";
 import "../styles/searchBar.css";
+import { setFilters } from "../features/newsSlice";
 import { Form, Button, Row, Col } from "react-bootstrap";
 
 const SearchBar = () => {
   const dispatch = useDispatch();
-  // const [value, setValue] = useState("");
 
-  const [query, setQuery] = useState("");
-  const [category, setLocalCategory] = useState("general");
-  const [start, setLocalStart] = useState("");
-  const [end, setLocalEnd] = useState("");
-  const [author, setLocalAuthor] = useState("");
+  const [filters, setFiltersState] = useState({
+    searchQuery: "",
+    category: "general",
+    startDate: "",
+    endDate: "",
+    author: "",
+  });
 
-  // useEffect(() => {
-  //   const timeoutId = setTimeout(() => {
-  //     dispatch(setSearchQuery(value));
-  //   }, 300);
-  //   return () => clearTimeout(timeoutId);
-  // }, [value, dispatch]);
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    setFiltersState({
+      ...filters,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  // const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-  //   setValue(event.target.value);
-  // };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    dispatch(setSearchQuery(query));
-    dispatch(setCategory(category));
-    dispatch(setStartDate(start));
-    dispatch(setEndDate(end));
-    dispatch(setAuthor(author));
+    dispatch(setFilters(filters));
   };
 
   return (
@@ -48,8 +40,9 @@ const SearchBar = () => {
             <Form.Control
               type="text"
               placeholder="Nhập từ khoá..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              name="searchQuery"
+              value={filters.searchQuery}
+              onChange={handleChange}
             />
           </Form.Group>
         </Col>
@@ -58,8 +51,9 @@ const SearchBar = () => {
           <Form.Group controlId="category">
             <Form.Label>Danh mục</Form.Label>
             <Form.Select
-              value={category}
-              onChange={(e) => setLocalCategory(e.target.value)}
+              name="category"
+              value={filters.category}
+              onChange={handleChange}
             >
               <option value="general">General</option>
               <option value="business">Business</option>
@@ -78,8 +72,9 @@ const SearchBar = () => {
             <Form.Label>Từ ngày</Form.Label>
             <Form.Control
               type="date"
-              value={start}
-              onChange={(e) => setLocalStart(e.target.value)}
+              name="startDate"
+              value={filters.startDate}
+              onChange={handleChange}
             />
           </Form.Group>
         </Col>
@@ -89,8 +84,9 @@ const SearchBar = () => {
             <Form.Label>Đến ngày</Form.Label>
             <Form.Control
               type="date"
-              value={end}
-              onChange={(e) => setLocalEnd(e.target.value)}
+              name="endDate"
+              value={filters.endDate}
+              onChange={handleChange}
             />
           </Form.Group>
         </Col>
@@ -101,8 +97,9 @@ const SearchBar = () => {
             <Form.Control
               type="text"
               placeholder="VD: BBC, CNN..."
-              value={author}
-              onChange={(e) => setLocalAuthor(e.target.value)}
+              name="author"
+              value={filters.author}
+              onChange={handleChange}
             />
           </Form.Group>
         </Col>
